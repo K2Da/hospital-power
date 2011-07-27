@@ -6,6 +6,9 @@ def hospital(s, d)
     t = m[1..8]
     l = m[10..-2]
     '<a href="' + d.to_day_link + 'from/' + t + '/">' + l + '</a>'
+  }.gsub(/id:(\S+)/) { |m|
+    i = m[3..-1]
+    '<a href="' + d.to_day_link + 'id/' + i.gsub('+', '%2b') + '/">' + i + '</a>'
   }
 end
 
@@ -25,6 +28,14 @@ EOT
     }
   ],
 =end
+  Time.new(2011, 7, 27) =>
+  [
+    { :title => 'Summer vandalist comes',
+      :text  => hospital(<<"EOT", Time.new(2011, 7, 27))
+%p Summer vandalist id:qwg8oC/WO came Umehara general thread this morning.
+EOT
+    }
+  ],
   Time.new(2011, 7, 26) =>
   [
     { :title => 'Sako will not join Evo',

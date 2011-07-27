@@ -44,16 +44,3 @@ end
 def THR.delete(t)
   DB[:thread].filter('no = ?', t.no).delete
 end
-
-def get_mysql_info
-  services = JSON.parse(ENV['VCAP_SERVICES'])
-  services.each do |service_version, bindings|
-    bindings.each do |binding|
-      if binding['label'] =~ /mysql/i
-        res = binding['credentials']
-        return res
-      end
-    end
-  end
-  raise "could not find connection info"
-end
