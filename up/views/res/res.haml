@@ -1,0 +1,7 @@
+='<div class="res" style="margin-left:' + indent.to_s + 'em;">'
+- color = "#E6E2F4"
+%p{ :class => "i", :style => "background-color: " + color, :id => res.thread.no.to_s+ "_" + res.no.to_s }
+  =res.no.to_s + " | " + res.displaydate + res.displaytime + " | "
+  %a{ :href => res.time.to_day_link + "id/" + res.id.to_s.gsub('+', '%2b') + "/" }=res.id
+%p{ :class => "r" }=res.text
+='</div>'

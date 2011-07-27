@@ -1,0 +1,45 @@
+!!! XML
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => info }
+    %h1 :hospital power!
+    %div.container
+      %div.left
+        -day = Time.now.to_jst.to_date
+        %div.day
+          %h2=day.strftime('%A %B %d, %Y')
+          =haml :'calendar/day', :locals => { :day => day }
+        -day = Time.now.to_jst.to_date - 1 * 60 * 60 * 24
+        %div.day
+          %h2=day.strftime('%A %B %d, %Y')
+          =haml :'calendar/day', :locals => { :day => day }
+        -day = Time.now.to_jst.to_date - 2 * 60 * 60 * 24
+        %div.day
+          %h2=day.strftime('%A %B %d, %Y')
+          =haml :'calendar/day', :locals => { :day => day }
+      %div.right
+        %div.rightin
+          %h4 functions
+          %ul
+            %li
+              %a{ :href => "/2011/"} 2011 CE
+            %li
+              %a{ :href => "/threads/"} all threads
+          %h4 internet
+          %ul
+            %li
+              %a{ :href => "http://yuzuru.2ch.net/gamefight/"} 2ch fighting game board
+            %li
+              %a{ :href => "http://www18.atpages.jp/vf12360/checker/menu.html" } fighting game stream checker
+            %li
+              %a{ :href => "http://blog.livedoor.jp/furious2011/" } furious
+            %li
+              %a{ :href => "http://shoryuken.com/" } SRK
+            %li
+              %a{ :href => "http://www.eventhubs.com/" } EvebtHubs.com
+            %li
+              %a{ :href => "http://www.google.com//" } google
+            %li
+              %a{ :href => "http://www.geocities.jp/burontosan/" } burontosan best quotes
+    =haml :'common/footer'

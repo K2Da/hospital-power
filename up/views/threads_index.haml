@@ -1,0 +1,18 @@
+!!! XML
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => { :crumb => 'threads' } }
+    %h1 threads
+    %div.l
+      %table
+        %tbody
+          -TM.all.each.sort_by { |k, v| k }.each do |n, t|
+            %tr
+              %td
+                %a{ :href => "/thread/" + t.no.to_s + "/" }=t.no
+              %td=t.title
+              %td=t.res.length
+              %td=t.res.first.time.strftime('%B %d, %Y')
+              %td=t.res.last.time.strftime('%B %d, %Y')
+    =haml :'common/footer'

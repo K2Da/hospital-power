@@ -1,0 +1,7 @@
+!!! XML
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => { :crumb =>  month.strftime("%B") + " " + month.to_year_crumb } }
+    =haml :'calendar/month', :locals => { :month => month }
+    =haml :'common/footer'

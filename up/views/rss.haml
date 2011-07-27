@@ -1,0 +1,17 @@
+- require 'time'
+!!! XML 
+%rss{ :version => "2.0" } 
+  %channel 
+    %title       hospital power
+    %link=       url('http://hospitalpwr.cloudfoundry.com/') 
+    %description for ping
+    %language    ja-jp 
+    %pubDate=    Time.now.rfc2822
+    - for i in 0..5
+      - t = (Time.new(Time.now.year, Time.now.mon, Time.now.day, Time.now.hour) - i *     60 * 60)
+      - str = t.strftime("%Y%m%d%H")
+      %item 
+        %title=       str
+        %description= str
+        %link=        url('http://hospitalpwr.cloudfoundry.com/' + i.to_s) 
+        %pubDate=     t.rfc2822

@@ -1,0 +1,6 @@
+%div.crumb
+  %p
+    - c = info[:crumb]
+    %a{ :href => "/"}:hospital power!
+    =c == "" ? "" : "&gt;"
+    = c

@@ -1,0 +1,18 @@
+- info = DailyInfoManager[day]
+%div.uh
+  %p= "res: [" + info.count.to_s + "] unique id: [" + info.id_count.to_s + "]"
+-if ARTICLE[day] != nil
+  %div.article
+    -ARTICLE[day].each do |article|
+      %h3=article[:title]
+      %div
+        =haml article[:text]
+%h3 res
+%div.l
+  %p= info.hours_link
+%h3 top players
+%div.l
+  %p= info.player_link
+%h3 top writers
+%div.l
+  %p= info.id_link

@@ -1,0 +1,16 @@
+!!! XML
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => info }
+    %div.updated
+      %p="last updated at " + TM.updatedat.to_s
+    - res = vt.res_by_conds
+    - res.each do |res|
+      - if res.interm & !res.displayed
+        - indent = 2
+        =haml :'res/main_res', :locals => { :res => res, :indent => indent }
+    %div.crumb
+      %p
+        %a{ :href => vt.next_link } continue
+    =haml :'common/footer'

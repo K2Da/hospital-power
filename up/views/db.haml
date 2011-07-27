@@ -1,0 +1,23 @@
+!!! XML
+%html
+  %body
+    %h1= tablename
+    %table
+      %tbody
+        - rows = table.all
+        - cols = rows[0].keys
+        %tr
+          - cols.each do |c|
+            %td= c
+        %tr
+          - cols.each do |c|
+            %td= rows[0][c.intern].class
+        - rows.each do |r|
+          %tr
+            - cols.each do |c|
+              - item = r[c.intern]
+              - if item.instance_of?(Sequel::SQL::Blob) 
+                %td= item[0..10]
+              - else
+                %td= item
+

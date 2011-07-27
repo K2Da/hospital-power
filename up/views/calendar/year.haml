@@ -1,0 +1,5 @@
+%h1=year.strftime("%Y CE")
+%div.l
+  %p
+    - TM.months.find_all { |m, c| m.year == year.year }.sort { |a, b| a[0] - b[0] }.each do |m, c|
+      %a{:href => m.strftime('/%Y/%m/') }= m.strftime("%B") + "(" + c.to_s + ")"

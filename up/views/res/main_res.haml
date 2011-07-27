@@ -1,0 +1,15 @@
+- res.displayed = true
+- downlevel = false
+
+- res.refer_to_view.each do |ref|
+  - if !ref.displayed
+    - downlevel = true
+    =haml :'res/main_res', :locals => { :res => ref, :indent => indent }
+
+- if downlevel
+  - indent = indent + 1
+=haml :'res/res', :locals => { :res => res, :indent => indent }
+
+- res.refer_from_view.each do |ref|
+  - if !ref.displayed
+    =haml :'res/main_res', :locals => { :res => ref, :indent => indent + 1 }
