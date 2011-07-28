@@ -1,3 +1,4 @@
 User-agent: *
-Disallow:/*/*/*/id/*
-Disallow:/*/*/*/player/*
+Disallow:/*/*/*/id/*/
+Disallow:/*/*/*/player/*/
+Disallow:/thread/*/res/*/

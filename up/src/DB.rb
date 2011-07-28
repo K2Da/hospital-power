@@ -44,3 +44,15 @@ end
 def THR.delete(t)
   DB[:thread].filter('no = ?', t.no).delete
 end
+
+def THR.newer(d)
+  DB[:thread].filter('`to` > ?', d)
+end
+
+def THR.dat(no)
+  DB[:thread].filter('no = ?', no)[:no => no]
+end
+
+def THR.info
+  DB[:thread].select(:no, :title, :from, :to, :res_count)
+end

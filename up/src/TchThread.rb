@@ -8,19 +8,26 @@ class TchThreadManager
   attr_reader   :years, :months, :days
 
   UPDATE_SPAN = 10 * 60
+  INITIAL_DAT = 3 * 60 * 60 * 24
 
   def initialize
     @threads = {}
     @updatedat = Time.now - UPDATE_SPAN
 
     THR.all.each { |t|
-      @threads[t[:no]] = TchThread.new(t[:no], t[:dat].force_encoding('Shift_JIS'))
+      @threads[t[:no]] = TchThread.new_db(t[:no], t[:title], t[:from], t[:to])
     }
+
+    THR.newer(Time.now.to_jst - INITIAL_DAT).each { |t|
+      @threads[t[:no]] = TchThread.new_dat(t[:no], t[:dat])
+    }
+
     update_calendar
   end
 
   def update
     return if Time.now.to_jst < @updatedat + UPDATE_SPAN || ENV['HOSPITALPWR_CACHE_MODE'] == "1"
+
     Dat.current_threads.each { |t|
       no = t[:no].to_i
       if @threads[no] == nil ||
@@ -30,12 +37,14 @@ class TchThreadManager
         p "memory res length" + @threads[no].res.length.to_s if @threads[no] != nil
 
         d = Dat.get_thread(t[:no])
-        n = TchThread.new(t[:no], d)
+        n = TchThread.new_dat(t[:no], d)
         THR.delete(n)
         THR.insert(n, d)
         @threads[no] = n
       end
     }
+    @threads.each { |no, thread| thread.delete_res }
+
     @updatedat = Time.now.to_jst
     update_calendar
   end
@@ -69,24 +78,65 @@ class TchThreadManager
 end
 
 class TchThread
-  attr_accessor :no, :title, :res
+  LIFETIME = 10 * 60
+  attr_accessor :no, :title, :lastaccess, :from, :to
 
   # initialize from dat file
-  def initialize(no, dat)
-    @no, @res, @title, i = no, Array.new, "", 1
+  def self.new_dat(no, dat)
+    p "thread new from dat:" + no.to_s
+    obj = self.new
+    obj.no, obj.title, i = no, "", 1
+    obj.lastaccess = nil
 
+    obj.res_from_dat(dat)
+    obj
+  end
+
+  # initialize from db
+  def self.new_db(no, title, from, to)
+    p "thread new from db:" + no.to_s
+    obj = self.new
+    obj.no, obj.title, obj.from, obj.to = no, title, from, to
+    obj
+  end
+
+  def res_from_dat(dat)
+    @res_arr = []
     dat.encode(
       "UTF-8", "Shift_JIS", :invalid => :replace, :undef => :replace
       ).split("\n").each_with_index { |l, i|
-      @res << TchRes.new(self, i + 1, l, i == 0 ? title : "") if i < 1000
+      @res_arr << TchRes.new(self, i + 1, l, i == 0 ? title : "") if i < 1000
     }
-
     set_refer
   end
 
-  def from; @res[0].time; end
 
-  def to; @res.last.time; end
+  def from
+    return @from if @res_arr == nil
+    res[0].time
+  end
+
+  def to
+    return @to if @res_arr == nil
+    res.last.time
+  end
+
+  def res
+    if @res_arr == nil 
+      res_from_dat(THR.dat(@no)[:dat])
+      p "get dat from db " + @no.to_s
+    end
+    @lastaccess = Time.now.to_jst
+    @res_arr
+  end
+
+  def delete_res
+    return if @res_arr == nil
+    if @lastaccess == nil || @lastaccess < Time.now.to_jst - LIFETIME
+      @res_arr = nil
+      p "thread delete " + no.to_s
+    end
+  end
 
   REG_REF = /<a href=\"\S+\" target=\"_blank\">\&gt;\&gt;(\d+)<\/a>(.*)/u
 
@@ -101,7 +151,7 @@ class TchThread
     res.each { |r| r.text_replace }
   end
 
-  def res_by_no(no); @res.find { |r| r.no == no }; end
+  def res_by_no(no); res.find { |r| r.no == no }; end
 end
 
 class TchRes
