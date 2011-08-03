@@ -15,14 +15,14 @@ class TchThreadManager
     @updatedat = Time.now - UPDATE_SPAN
 
     THR.all.each { |t|
-      @threads[t[:no]] = TchThread.new_db(t[:no], t[:title], t[:from], t[:to])
+      @threads[t[:no]] = TchThread.new_db(t[:no], t[:title], t[:from], t[:to], t[:res_count])
     }
 
     THR.newer(Time.now.to_jst - INITIAL_DAT).each { |t|
       @threads[t[:no]] = TchThread.new_dat(t[:no], t[:dat])
     }
 
-    update_calendar
+    update
   end
 
   def update
@@ -31,10 +31,10 @@ class TchThreadManager
     Dat.current_threads.each { |t|
       no = t[:no].to_i
       if @threads[no] == nil ||
-        t[:count] > @threads[no].res.length &&  @threads[no].res.length != 1000
+        t[:count] > @threads[no].res_count &&  @threads[no].res_count != 1000
 
         p "get dat dat length = " + t[:count].to_s
-        p "memory res length" + @threads[no].res.length.to_s if @threads[no] != nil
+        p "memory res length" + @threads[no].res_count.to_s if @threads[no] != nil
 
         d = Dat.get_thread(t[:no])
         n = TchThread.new_dat(t[:no], d)
@@ -79,41 +79,55 @@ end
 
 class TchThread
   LIFETIME = 10 * 60
-  attr_accessor :no, :title, :lastaccess, :from, :to
+  attr_accessor :no, :title, :lastaccess, :res_count
+
+  def initialize(no)
+    @no = no
+  end
 
   # initialize from dat file
   def self.new_dat(no, dat)
     p "thread new from dat:" + no.to_s
-    obj = self.new
-    obj.no, obj.title, i = no, "", 1
+    obj = self.new(no)
+    obj.title, i = "", 1
     obj.lastaccess = nil
 
     obj.res_from_dat(dat)
+
     obj
   end
 
   # initialize from db
-  def self.new_db(no, title, from, to)
+  def self.new_db(no, title, from, to, res_count)
     p "thread new from db:" + no.to_s
-    obj = self.new
-    obj.no, obj.title, obj.from, obj.to = no, title, from, to
+    obj = self.new(no)
+    obj.title, obj.from, obj.to, obj.res_count = title, from, to, res_count
     obj
   end
 
   def res_from_dat(dat)
     @res_arr = []
-    dat.encode(
+    lines = dat.encode(
       "UTF-8", "Shift_JIS", :invalid => :replace, :undef => :replace
-      ).split("\n").each_with_index { |l, i|
-      @res_arr << TchRes.new(self, i + 1, l, i == 0 ? title : "") if i < 1000
+      ).split("\n")
+
+    lines.each_with_index { |l, i|
+      if i < 1000
+        r = TchRes.new(self, i + 1, l, i == 0 ? title : "")
+        @res_arr << r if r.time != nil
+      end
     }
     set_refer
+    @from, @to, @res_count = from, to, lines.length
   end
-
 
   def from
     return @from if @res_arr == nil
     res[0].time
+  end
+  
+  def from=(f)
+    @from = f
   end
 
   def to
@@ -121,11 +135,16 @@ class TchThread
     res.last.time
   end
 
+  def to=(t)
+    @to = t
+  end
+
   def res
     if @res_arr == nil 
       res_from_dat(THR.dat(@no)[:dat])
       p "get dat from db " + @no.to_s
     end
+
     @lastaccess = Time.now.to_jst
     @res_arr
   end
@@ -162,9 +181,12 @@ class TchRes
 
   # initialize by dat file
   def initialize(thread, no, dat_line, title)
+    @thread, @no = thread, no
+    @name, @email, @id, @text = "", "", "", ""
+    @time = nil
     begin
       m = REG_RES.match(dat_line.strip).captures
-      @thread, @no, @name, @email, @id, @text = thread, no, m[0].delete("<>"), m[1].delete("<>"), m[3], m[4]
+      @name, @email, @id, @text = m[0].delete("<>"), m[1].delete("<>"), m[3], m[4]
       title.replace(m[5])
 
       n = REG_DAY.match(m[2]).captures
@@ -187,5 +209,9 @@ class TchRes
       /<a href="\S+" target="_blank">&gt;&gt;(\d+)<\/a>/,
       '<a href="#' + @thread.no.to_s + '_\1">&gt;&gt;\1</a>'
     )
+  end
+
+  def id_forjs
+    @id.gsub('+', '_2b').gsub('/', '_2F')
   end
 end

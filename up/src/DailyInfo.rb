@@ -97,12 +97,9 @@ class DailyInfo
         l = "h" + s[0]
         if link[l] == nil
           link[l] = {
-            :count  => 1,
             :player => [],
             :res    => []
           } 
-        else
-          link[l][:count] += 1
         end
 
         link[l][:player] = link[l][:player] | link_player
@@ -150,7 +147,10 @@ class DailyInfo
 
   def set_link_link(link)
     ret = '<dl>'
-    link.sort { |a, b| b[1][:count] - a[1][:count] }.each_with_index { |kv, i|
+    link.sort { |a, b|
+      b[1][:res].inject(0) { |b, i| b + i.refer_from.length } -
+      a[1][:res].inject(0) { |b, i| b + i.refer_from.length }
+    }.each_with_index { |kv, i|
       break if i >= LINK_LINK_COUNT
       ret << '<dt>'
       kv[1][:player].each { |p| ret << p.to_s + ", " }

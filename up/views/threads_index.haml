@@ -1,4 +1,5 @@
 !!! XML
+-# encoding: utf-8
 %html
   =haml :'common/head'
   %body
@@ -11,8 +12,8 @@
             %tr
               %td
                 %a{ :href => "/thread/" + t.no.to_s + "/" }=t.no
-              %td=t.title
-              %td=t.res.length
-              %td=t.res.first.time.strftime('%B %d, %Y')
-              %td=t.res.last.time.strftime('%B %d, %Y')
+              %td="" #t.title.to_s
+              %td=t.res_count.to_s
+              %td=t.from.strftime('%B %d, %Y')
+              %td=t.to.strftime('%B %d, %Y')
     =haml :'common/footer'
