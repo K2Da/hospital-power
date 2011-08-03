@@ -7,6 +7,6 @@
   ="<a href='/thread/" + res.thread.no.to_s + "/res/" + res.no.to_s + "/'>"
   =res.no.to_s + "</a> | " + res.displaydate + res.displaytime + " | "
   %a{ :href => res.time.to_day_link + "id/" + res.id.to_s.gsub('+', '%2b') + "/" }=res.id
-  = '[<a href="javascript:ng(\'' + res.id_forjs + '\')">NG</a>]'
+  = '[<a href="javascript:ng(\'' + res.id_forjs + '\')" class="n">NG</a>]'
 %p{ :class => "r" }=res.text
 ='</div>'
