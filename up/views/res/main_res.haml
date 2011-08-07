@@ -8,7 +8,7 @@
 
 - if downlevel
   - indent = indent + 1
-=haml :'res/res', :locals => { :res => res, :indent => indent, :i => i }
+=haml :'res/res', :locals => { :r => res, :indent => indent, :i => i }
 
 - res.refer_from_view.each do |ref|
   - if !ref.displayed

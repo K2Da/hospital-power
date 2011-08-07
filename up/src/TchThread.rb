@@ -214,4 +214,8 @@ class TchRes
   def id_forjs
     @id.gsub('+', '_2b').gsub('/', '_2F')
   end
+
+  def displaydate; time.strftime("%Y/%m/%d(" + WEEKDAY[time.wday] + ")"); end
+
+  def displaytime; time.strftime("%H:%M:%S"); end
 end

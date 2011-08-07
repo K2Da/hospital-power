@@ -6,6 +6,11 @@ WEEKDAY = "日月火水木金土"
 
 class ViewOneThread
   attr_reader :all, :conds
+
+  def id
+    nil
+  end
+
   def initialize(conds)
     TM.update
     @thread_no, @res, @res_from, @res_to, @conds =
@@ -61,7 +66,8 @@ class ViewOneThread
 end
 
 class ViewThread
-  attr_reader :all, :from, :to, :conds
+  attr_reader :all, :from, :to, :conds, :id, :player
+
   def initialize(conds)
     TM.update
     @conds, @player, @id = conds, conds[:player], conds[:id]
@@ -182,9 +188,9 @@ class ViewRes < DelegateClass(TchRes)
     @displayed, @vthread, @realres, @interm = false, vthread, res, true
   end
 
-  def displaydate; time.strftime("%Y/%m/%d(" + WEEKDAY[time.wday] + ")"); end
-
-  def displaytime; time.strftime("%H:%M:%S"); end
+  def target_id
+    @vthread.id != nil && @vthread.id == @realres.id
+  end
 
   def set_refer()
     @refer_to_view   = refer_to.map { |r| @vthread.all.find { |vr| vr.realres == r } }
@@ -192,9 +198,9 @@ class ViewRes < DelegateClass(TchRes)
   end
 
   def text
-    super.gsub(
-      /<a href="\S+" target="_blank">&gt;&gt;(\d+)<\/a>/,
-      '<a href="#' + thread.no.to_s + '_\1">&gt;&gt;\1</a>'
-    )
+    return super if @vthread.player == nil
+    super.gsub(PLAYERS[@vthread.player.to_sym]) { |p|
+      '<span class="y">' + p + '</span>'
+    }
   end
 end
