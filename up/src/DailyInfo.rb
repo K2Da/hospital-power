@@ -17,6 +17,10 @@ class DailyInfoManager
 
     return @@cache[day][:info]
   end
+
+  def DailyInfoManager.all
+    @@cache
+  end
 end
 
 class DailyInfo 

@@ -3,7 +3,7 @@
   =haml :'common/head'
   %body
     =haml :'common/header', :locals => { :info => info }
-    %h1 :hospital power!
+    %h1.title :hospital power!
     %div.container
       %div.left
         -day = Time.now.to_jst.to_date
@@ -25,9 +25,7 @@
             %li
               %a{ :href => "/2011/"} 2011 CE
             %li
-              %a{ :href => "/threads/"} all threads
-            %li
-              %a{ :href => "javascript:clear_ng();" } celar NG List
+              %a{ :href => "javascript:clear_ng();" } clear NG List
           %h4 internet
           %ul
             %li
@@ -44,4 +42,12 @@
               %a{ :href => "http://www.google.com//" } google
             %li
               %a{ :href => "http://www.geocities.jp/burontosan/" } burontosan best quotes
+          %h4 for debug
+          %ul
+            %li
+              %a{ :href => "/threads/" } all threads
+            %li
+              %a{ :href => "/dailyinfo/" } daily info
+            %li
+              %a{ :href => "/pagecache/" } page cache
     =haml :'common/footer'

@@ -1,0 +1,20 @@
+!!! XML
+-# encoding: utf-8
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => { :crumb => 'threads' } }
+    %h1 page cache
+    %div.l
+      %p='hit:[' + PC.hit.to_s + '] miss:[' + PC.miss.to_s + '] update:[' + PC.update.to_s + '] '
+      %p='max:[' + PC.max.to_s + '] min:[' + PC.min.to_s + '] current:[' + PC.pages.count.to_s + ']'
+      %table
+        %tbody
+          -PC.pages.each.sort_by { |u, h| h[:lastused] }.each do |u, h|
+            %tr
+              %td
+                %a{ :href => u }=u
+              %td=h[:lastused].to_short_str
+              %td=h[:created]
+              %td=h[:count]
+    =haml :'common/footer'

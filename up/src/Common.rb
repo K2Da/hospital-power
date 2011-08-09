@@ -35,6 +35,10 @@ class Time
     strftime('/%Y/%m/%d/')
   end
 
+  def to_short_str
+    strftime('%b %d, %y %H:%M:%S')
+  end
+
   def to_jst
     getutc + 9 * 60 * 60
   end

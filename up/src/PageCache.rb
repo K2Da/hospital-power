@@ -2,7 +2,7 @@
 require './src/ViewThread.rb'
 
 class PageCache
-  attr_reader :pages, :hit, :miss, :update
+  attr_reader :pages, :hit, :miss, :update, :max, :min
 
   def initialize(max, min)
     @max, @min, @pages   = max, min, {}

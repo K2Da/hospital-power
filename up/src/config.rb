@@ -55,5 +55,7 @@ PLAYERS = {
   :Choko            => /Choko|チョコ|ちょこ/i,
   :Akiki            => /Akiki|あきき/i,
   :Satan            => /Satan|魔王/i,
+  :cis              => /cis/i,
+  :Inaba            => /Inaba|稲葉/i,
   :Xian             => /Xian|シャングリラ神/i
 }

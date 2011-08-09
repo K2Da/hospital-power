@@ -7,12 +7,7 @@ WEEKDAY = "日月火水木金土"
 class ViewOneThread
   attr_reader :all, :conds
 
-  def id
-    nil
-  end
-
   def initialize(conds)
-    TM.update
     @thread_no, @res, @res_from, @res_to, @conds =
       conds[:thread_no].to_i,
       conds[:res],
@@ -69,7 +64,6 @@ class ViewThread
   attr_reader :all, :from, :to, :conds, :id, :player
 
   def initialize(conds)
-    TM.update
     @conds, @player, @id = conds, conds[:player], conds[:id]
     @from, @to = ViewThread.check_time(conds)
     @real_threads = TM.all.values.find_all { |t| t.to > @from && t.from < @to }
@@ -189,7 +183,7 @@ class ViewRes < DelegateClass(TchRes)
   end
 
   def target_id
-    @vthread.id != nil && @vthread.id == @realres.id
+    @vthread.respond_to?(:id) && @vthread.id != nil && @vthread.id == @realres.id
   end
 
   def set_refer()
@@ -198,7 +192,7 @@ class ViewRes < DelegateClass(TchRes)
   end
 
   def text
-    return super if @vthread.player == nil
+    return super if !@vthread.respond_to?(:player) || @vthread.player == nil
     super.gsub(PLAYERS[@vthread.player.to_sym]) { |p|
       '<span class="y">' + p + '</span>'
     }

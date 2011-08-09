@@ -9,8 +9,10 @@ class Dat
   REG_SUBLINE = /(\d+?)\.dat<>(.*) \((\d+)\)$/u
 
   def Dat.current_threads
-    subject = open(SUBJECT, "r:Shift_JIS").read.
-      encode("UTF-8", "Shift_JIS", :invalid => :replace, :undef => :replace)
+    subject =
+      open(SUBJECT, "r:Shift_JIS", 
+           {'Cache-Control' => 'no-cache', 'Pragma' => 'no-cache'}
+          ).read.encode("UTF-8", "Shift_JIS", :invalid => :replace, :undef => :replace)
     Dat.get_threads(subject)
   end
 
@@ -21,7 +23,8 @@ class Dat
   end
 
   def Dat.get_thread(no)
-    open(THREAD + no.to_s + ".dat", "r:Shift_JIS").read 
+    open(THREAD + no.to_s + ".dat", "r:Shift_JIS",
+      {'Cache-Control' => 'no-cache', 'Pragma' => 'no-cache'}).read 
   end
 
   def Dat.thread_info(line)

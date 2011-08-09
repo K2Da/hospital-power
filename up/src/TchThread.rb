@@ -7,7 +7,7 @@ class TchThreadManager
   attr_accessor :updatedat
   attr_reader   :years, :months, :days
 
-  UPDATE_SPAN = 10 * 60
+  UPDATE_SPAN = 1 * 60
   INITIAL_DAT = 3 * 60 * 60 * 24
 
   def initialize
@@ -30,6 +30,12 @@ class TchThreadManager
 
     Dat.current_threads.each { |t|
       no = t[:no].to_i
+
+      if @threads[no] != nil 
+        p "current " + t[:count].to_s
+        p "in memory " + @threads[no].res_count.to_s
+      end
+
       if @threads[no] == nil ||
         t[:count] > @threads[no].res_count &&  @threads[no].res_count != 1000
 
@@ -101,7 +107,7 @@ class TchThread
   def self.new_db(no, title, from, to, res_count)
     p "thread new from db:" + no.to_s
     obj = self.new(no)
-    obj.title, obj.from, obj.to, obj.res_count = title, from, to, res_count
+    obj.title, obj.from, obj.to, obj.res_count = title.force_encoding("UTF-8"), from, to, res_count
     obj
   end
 
@@ -171,6 +177,10 @@ class TchThread
   end
 
   def res_by_no(no); res.find { |r| r.no == no }; end
+
+  def has_res_data?
+    @res_arr != nil
+  end
 end
 
 class TchRes

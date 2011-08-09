@@ -15,10 +15,12 @@ require './src/DB'
 require './src/DailyInfo'
 require './src/article'
 require './src/PageCache'
+require './src/Maintainer'
 
 set :haml, {:format => :html5 }
 TM = TchThreadManager.new
 PC = PageCache.new(50, 30)
+Maintainer.new().start
 
 # current
 get '/current/' do
@@ -38,7 +40,6 @@ reg_id     = '(?:id/(\S{9})/){0,1}'
 reg_player = '(?:player/(\S+)/){0,1}'
 
 get Regexp.new(reg_date + reg_from + reg_to + reg_id + reg_player + '$') do
-  TM.update
   p = params[:captures]
   conds = {
     :date => Time.new(p[0], p[1], p[2]),
@@ -57,15 +58,9 @@ reg_res      = '(?:res/(\d+?)/){0,1}'
 reg_res_from = '(?:from/(\d+?)/){0,1}'
 reg_res_to   = '(?:to/(\d+?)/){0,1}'
 get Regexp.new(reg_thread + reg_res + reg_res_from + reg_res_to + '$') do
-  TM.update
   p = params[:captures]
   vt = ViewOneThread.new( { :thread_no => p[0], :res => p[1], :res_from => p[2], :res_to => p[3] })
   haml :day_res, :locals => { :vt => vt, :info => { :crumb => vt.crumb } }
-end
-
-get '/threads/' do
-  TM.update
-  haml :threads_index
 end
 
 
@@ -96,8 +91,20 @@ get '/db/:tablename' do
 end
 
 get '/rss.xml' do
-  TM.update
   haml :rss
+end
+
+# debug
+get '/threads/' do
+  haml :threads_index
+end
+
+get '/pagecache/' do
+  haml :pagecache_index
+end
+
+get '/dailyinfo/' do
+  haml :dailyinfo_index
 end
 
 =begin

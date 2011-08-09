@@ -1,0 +1,17 @@
+!!! XML
+-# encoding: utf-8
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => { :crumb => 'threads' } }
+    %h1 dailyinfo
+    %div.l
+      %table
+        %tbody
+          -DailyInfoManager.all.each.sort_by { |d, h| d }.each do |d, h|
+            %tr
+              %td
+                %a{ :href => d.to_day_link }=d.strftime('%b %d, %y')
+              %td=h[:time].to_short_str
+              %td=h[:info].count.to_s
+    =haml :'common/footer'

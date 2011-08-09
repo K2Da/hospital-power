@@ -12,8 +12,10 @@
             %tr
               %td
                 %a{ :href => "/thread/" + t.no.to_s + "/" }=t.no
-              %td="" #t.title.to_s
+              %td=t.title.to_s
               %td=t.res_count.to_s
-              %td=t.from.strftime('%B %d, %Y')
-              %td=t.to.strftime('%B %d, %Y')
+              %td=t.from.strftime('%b %d, %y')
+              %td=t.to.strftime('%b %d, %y')
+              %td=t.lastaccess == nil ? 'nil' : t.lastaccess.to_short_str
+              %td=t.has_res_data? ? 'Y' : 'N'
     =haml :'common/footer'
