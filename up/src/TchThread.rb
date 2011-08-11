@@ -7,12 +7,10 @@ class TchThreadManager
   attr_accessor :updatedat
   attr_reader   :years, :months, :days
 
-  UPDATE_SPAN = 1 * 60
   INITIAL_DAT = 3 * 60 * 60 * 24
 
   def initialize
     @threads = {}
-    @updatedat = Time.now - UPDATE_SPAN
 
     THR.all.each { |t|
       @threads[t[:no]] = TchThread.new_db(t[:no], t[:title], t[:from], t[:to], t[:res_count])
@@ -26,29 +24,29 @@ class TchThreadManager
   end
 
   def update
-    return if Time.now.to_jst < @updatedat + UPDATE_SPAN || ENV['HOSPITALPWR_CACHE_MODE'] == "1"
-
-    Dat.current_threads.each { |t|
-      no = t[:no].to_i
-
-      if @threads[no] != nil 
-        p "current " + t[:count].to_s
-        p "in memory " + @threads[no].res_count.to_s
-      end
-
-      if @threads[no] == nil ||
-        t[:count] > @threads[no].res_count &&  @threads[no].res_count != 1000
-
-        p "get dat dat length = " + t[:count].to_s
-        p "memory res length" + @threads[no].res_count.to_s if @threads[no] != nil
-
-        d = Dat.get_thread(t[:no])
-        n = TchThread.new_dat(t[:no], d)
-        THR.delete(n)
-        THR.insert(n, d)
-        @threads[no] = n
-      end
-    }
+    if ENV['HOSPITALPWR_CACHE_MODE'] != "1"
+      Dat.current_threads.each { |t|
+        no = t[:no].to_i
+  
+        if @threads[no] != nil 
+          p "current " + t[:count].to_s
+          p "in memory " + @threads[no].res_count.to_s
+        end
+  
+        if @threads[no] == nil ||
+          t[:count] > @threads[no].res_count &&  @threads[no].res_count != 1000
+  
+          p "get dat dat length = " + t[:count].to_s
+          p "memory res length" + @threads[no].res_count.to_s if @threads[no] != nil
+  
+          d = Dat.get_thread(t[:no])
+          n = TchThread.new_dat(t[:no], d)
+          THR.delete(n)
+          THR.insert(n, d)
+          @threads[no] = n
+        end
+      }
+    end
     @threads.each { |no, thread| thread.delete_res }
 
     @updatedat = Time.now.to_jst

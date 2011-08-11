@@ -8,16 +8,19 @@
       %div.left
         -day = Time.now.to_jst.to_date
         %div.day
-          %h2=day.strftime('%A %B %d, %Y')
-          =haml :'calendar/day', :locals => { :day => day }
+          %h2
+            %a{ :href => day.to_day_link}=day.strftime('%A %B %d, %Y')
+          =haml :'calendar/short_day', :locals => { :day => day }
         -day = Time.now.to_jst.to_date - 1 * 60 * 60 * 24
         %div.day
-          %h2=day.strftime('%A %B %d, %Y')
-          =haml :'calendar/day', :locals => { :day => day }
+          %h2
+            %a{ :href => day.to_day_link}=day.strftime('%A %B %d, %Y')
+          =haml :'calendar/short_day', :locals => { :day => day }
         -day = Time.now.to_jst.to_date - 2 * 60 * 60 * 24
         %div.day
-          %h2=day.strftime('%A %B %d, %Y')
-          =haml :'calendar/day', :locals => { :day => day }
+          %h2
+            %a{ :href => day.to_day_link}=day.strftime('%A %B %d, %Y')
+          =haml :'calendar/short_day', :locals => { :day => day }
       %div.right
         %div.rightin
           %h4 functions
