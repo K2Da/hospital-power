@@ -6,6 +6,18 @@
     %h1.title :hospital power!
     %div.container
       %div.left
+        %div.day
+          %p "Umehara general thread" takes all blame in the fighting game community.
+          %p This site archives "Ume Thre" history.
+        %h2 Current threads
+        %div.l
+          - TM.latest_thread(3).each do |t|
+            %dl
+              %dt
+                =t[1].title
+              %dd
+                %a{ :href => t[1].real_url }= t[1].real_url
+      
         -day = Time.now.to_jst.to_date
         %div.day
           %h2

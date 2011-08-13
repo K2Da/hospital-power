@@ -1,7 +1,9 @@
 %div{ :class => "res " + r.id_forjs,  :style => "margin-left:" + indent.to_s + "em" }
   %p{ :class => "i " + (i == 0 ? "bas" : "bal"), :id => r.thread.no.to_s+ "_" + r.no.to_s }
     %a{ :href =>'/thread/' + r.thread.no.to_s + "/res/" + r.no.to_s }<>
+      ='<span class="y">' if r.is_target_res?
       =r.no.to_s
+      ='</span>' if r.is_target_res?
     = " | " + r.displaydate + r.displaytime + " | "
     %a{ :class => r.target_id ? "y" : "" , :href => r.time.to_day_link + "id/" + r.id_forjs + "/" }<
       =r.id

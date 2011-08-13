@@ -20,8 +20,11 @@ class ViewOneThread
     @all = @thread.res.map! { |r| ViewRes.new(self, r) }.sort! { |r1, r2| r1.time - r2.time }
 
     set_term
-
     set_refer
+  end
+
+  def target_no
+    @res_from == @res_to ? @res_from : nil
   end
 
   def crumb
@@ -196,5 +199,11 @@ class ViewRes < DelegateClass(TchRes)
     super.gsub(PLAYERS[@vthread.player.to_sym]) { |p|
       '<span class="y">' + p + '</span>'
     }
+  end
+
+  def is_target_res?
+    @vthread.respond_to?(:target_no) &&
+      @vthread.target_no != nil &&
+      @vthread.target_no == @realres.no
   end
 end

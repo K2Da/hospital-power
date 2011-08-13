@@ -79,10 +79,15 @@ class TchThreadManager
       end
     }
   end
+
+  def latest_thread(n)
+    @threads.sort { |a, b| a[1].to <=> b[1].to }[(-n)..-1].reverse
+  end
 end
 
 class TchThread
-  LIFETIME = 10 * 60
+  LIFETIME   = 10 * 60
+  THREAD_URL = "http://yuzuru.2ch.net/test/read.cgi/gamefight/"
   attr_accessor :no, :title, :lastaccess, :res_count
 
   def initialize(no)
@@ -107,6 +112,10 @@ class TchThread
     obj = self.new(no)
     obj.title, obj.from, obj.to, obj.res_count = title.force_encoding("UTF-8"), from, to, res_count
     obj
+  end
+
+  def real_url
+    THREAD_URL + @no.to_s + '/'
   end
 
   def res_from_dat(dat)
