@@ -15,7 +15,7 @@ class Time
     strftime("%Y%m%d%H%M")
   end
 
-  def to_link
+  def from_link
     strftime('/%Y/%m/%d/from/%H:%M:%S/')
   end
   

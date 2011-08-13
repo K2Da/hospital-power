@@ -111,7 +111,7 @@ class DailyInfo
     ret = ""
     @timespan.each { |hour, count|
       ret <<
-        '<a href="' + hour.to_link + '">' + hour.strftime("%H") + '</a>' +
+        '<a href="' + hour.from_link + '">' + hour.strftime("%H") + '</a>' +
         '(' + count.to_s + "), " if count > 0
     }
     ret[0..-3]

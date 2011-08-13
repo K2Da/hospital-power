@@ -4,5 +4,6 @@
   %body
     =haml :'common/header', :locals => { :info => { :crumb => '<a href="' + day.to_month_link + '">' + day.strftime("%B") + '</a> ' + day.strftime("%d") + ", " + day.to_year_crumb } }
     %h1=day.strftime('%A %B %d, %Y')
-    =haml :'calendar/day', :locals => { :day => day }
+    %div.main
+      =haml :'calendar/day', :locals => { :day => day }
     =haml :'common/footer'

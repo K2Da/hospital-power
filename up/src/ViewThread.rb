@@ -32,8 +32,8 @@ class ViewOneThread
     if @res != nil
       ret << " and res == " + @res.to_s
     else
-      ret << " and no > " + @res_from.to_s if @res_from != nil && @res_from != 1
-      ret << " and no < " + @res_to .to_s if @res_to != nil && @res_to != 1000
+      ret << " and no >= " + @res_from.to_s if @res_from != nil && @res_from != 1
+      ret << " and no <= " + @res_to .to_s if @res_to != nil && @res_to != 1000
     end
     ret
   end
@@ -59,7 +59,11 @@ class ViewOneThread
   end
 
   def next_link
-    return ""
+    ret = []
+    ret << "<a href='/thread/#{@thread_no}/to/#{@res_from}/'>prev</a>" if @res_from != 1
+    ret << "<a href='/thread/#{@thread_no}/'>all</a>" if @res_from != 1 || @res_to != 1000
+    ret << "<a href='/thread/#{@thread_no}/from/#{@res_to}/'>aft</a>" if @res_to != 1000
+    ret.length == 0 ? " * " : ret.join(' | ')
   end
 end
 
@@ -104,17 +108,6 @@ class ViewThread
     return false
   end
 
-  def crumb
-    (@from.to_day_crumb + " ") + 
-    (@from.to_display_time != "00:00:00" ? "from "   + @from.to_display_time + ' '       : '') +
-    (@id                   != nil        ? "where id == "     + @id.to_s + ' '           : '') +
-    (@player               != nil        ? "where player == " + @player.to_s   + ' '     : '')
-  end
-
-  def res_by_conds
-    @all
-  end
-
   def set_term
     mode = :before
 
@@ -128,14 +121,36 @@ class ViewThread
     }
   end
 
+  def res_by_conds
+    @all
+  end
+
+  def crumb
+    (@from.to_day_crumb + " ") + 
+    (@id != nil && @player != nil ? "from " + @from.to_display_time + ' ' : '') +
+    (@id                   != nil ? "where id == "     + @id.to_s + ' '           : '') +
+    (@player               != nil ? "where player == " + @player.to_s   + ' '     : '')
+  end
+
   def next_link
-    if Time.now.to_jst.comparetime >= @to.comparetime
-      @to.to_link
-    elsif (last = @all.reverse.find { |r| r.displayed }) != nil
-      last.time.to_link
+    ret = []
+    if @id != nil
+    elsif @player != nil
+      p, n = (@from - 60 * 60 * 24), (@from + 60 * 60 * 24)
+      ret << "<a href='#{p.to_day_link}player/#{@player}/'>#{p.strftime('%B %d')}</a>"
+      ret << "<a href='#{n.to_day_link}player/#{@player}/'>#{n.strftime('%B %d')}</a>" if n < TM.updatedat
     else
-      @from.to_link
+      ret << "<a href='#{(@from - MAX_TIMESPAN).from_link}'>- #{@from.strftime('%H:%M')}</a>"
+      if Time.now.to_jst.comparetime >= @to.comparetime
+        ret << "<a href='#{@to.from_link}'>#{@to.strftime('%H:%M')} - </a>"
+      elsif (last = @all[-1]) != nil
+        ret << "<a href='#{last.time.from_link}'>#{last.time.strftime('%H:%M')} - </a>"
+      else
+        ret << "<a href='#{@from.from_link}'>#{@from.strftime('%H:%M')} - </a>"
+      end
     end
+
+    ret.length == 0 ? " * " : ret.join(' | ')
   end
 
   ##########
