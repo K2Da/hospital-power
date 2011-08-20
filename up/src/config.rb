@@ -3,7 +3,7 @@ REG_TITLE = /.*ウメハラ総合スレ\d{4}.*/
 MAX_TIMESPAN = 1 * 60 * 60
 
 PLAYERS = {
-  :Umehara          => /Umehara|ウメ|梅原|ダイゴ|beast/i,
+  :Umehara          => /Umehara|ウメ[^ス]|梅原|ダイゴ|beast/i,
   :Sako             => /sako|サコ/i,
   :Tokido           => /Tokido|ときど|殿/i,
   :Ohnuki           => /Ohnuki|大貫|ヌキ/i,
@@ -52,11 +52,13 @@ PLAYERS = {
   :Kayane           => /Kayane/i,
   :Kara             => /Kara/i,
   :KayoPolice       => /Kayo|かよポ/i,
-  :Choko            => /Choko|チョコ|ちょこ/i,
+  :Choco            => /Choco|チョコ|ちょこ/i,
   :Akiki            => /Akiki|あきき/i,
   :Satan            => /魔王/i,
   :cis              => /cis/i,
   :Inaba            => /Inaba|稲葉/i,
   :Umezono          => /梅園/i,
+  :KOK              => /KOK/,
+  :Furious          => /furious/,
   :Xian             => /Xian|シャングリラ神/i
 }

@@ -39,5 +39,7 @@ class Maintainer
 
     DailyInfoManager.renew(n.to_date)
     DailyInfoManager.renew((n - 1 * 60 * 60 * 24).to_date) if n.hour == 0 && n.min / 10 == 0
+    DailyInfoManager.create_cache
+    GC.start
   end
 end

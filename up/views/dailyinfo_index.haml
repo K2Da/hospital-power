@@ -5,6 +5,7 @@
   %body
     =haml :'common/header', :locals => { :info => { :crumb => 'threads' } }
     %h1 dailyinfo
+    %p='all cached:[' + DailyInfoManager.all_cached.to_s + ']'
     %div.l
       %table
         %tbody

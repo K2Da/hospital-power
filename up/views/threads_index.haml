@@ -8,6 +8,14 @@
     %div.l
       %table
         %tbody
+          %tr
+            %th no
+            %th title
+            %th res_count
+            %th from
+            %th to
+            %th lastaccess
+            %th has_res_data?
           -TM.all.each.sort_by { |k, v| k }.each do |n, t|
             %tr
               %td

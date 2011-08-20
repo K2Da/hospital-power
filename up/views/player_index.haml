@@ -1,0 +1,27 @@
+!!! XML
+-# encoding: utf-8
+%html
+  =haml :'common/head'
+  %body
+    =haml :'common/header', :locals => { :info => { :crumb => 'threads' } }
+    - days = DailyInfoManager.all.sort { |a, b| b <=> a }
+    %h1 players
+    %div.l
+      %table
+        %tbody
+          %tr
+            %th player
+            - days.each_with_index do |d, i|
+              - break if i > 10
+              %th=d[0].to_day_ref
+          -f = days[0][1][:info].player
+          -f.sort { |a, b| b[1] <=> a[1] }.each do |kv|
+            -p = kv[0]
+            %tr
+              %td=p
+              - days.each_with_index do |d, i|
+                - break if i > 10
+                %td.c
+                  %a{ :href => d[0].to_day_link + "player/" + p.to_s + "/"  }
+                    =d[1][:info].player[p] || 0
+    =haml :'common/footer'

@@ -216,7 +216,7 @@ class TchRes
   end
 
   def add_refer_to(ref)
-    return if ref == nil
+    return if ref == nil || @no <= ref.no
     @refer_to << ref
     ref.refer_from << self
   end

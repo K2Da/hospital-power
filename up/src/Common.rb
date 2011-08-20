@@ -31,6 +31,10 @@ class Time
     strftime('/%Y/%m/')
   end
 
+  def to_day_ref
+    "<a href='#{to_day_link}'>#{strftime("%B %d")}</a>"
+  end
+
   def to_day_link
     strftime('/%Y/%m/%d/')
   end

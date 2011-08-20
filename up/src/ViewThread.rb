@@ -17,7 +17,7 @@ class ViewOneThread
     @res_from, @res_to = @res.to_i, @res.to_i if @res != nil
 
     @thread = TM.all[@thread_no]
-    @all = @thread.res.map! { |r| ViewRes.new(self, r) }.sort! { |r1, r2| r1.time - r2.time }
+    @all = @thread.res.map! { |r| ViewRes.new(self, r) }
 
     set_term
     set_refer
@@ -60,15 +60,15 @@ class ViewOneThread
 
   def next_link
     ret = []
-    ret << "<a href='/thread/#{@thread_no}/to/#{@res_from}/'>prev</a>" if @res_from != 1
-    ret << "<a href='/thread/#{@thread_no}/'>all</a>" if @res_from != 1 || @res_to != 1000
-    ret << "<a href='/thread/#{@thread_no}/from/#{@res_to}/'>aft</a>" if @res_to != 1000
+    ret << (@res_from != 1 ? "<a href='/thread/#{@thread_no}/to/#{@res_from}/'>prev</a>" : "prev")
+    ret << (@res_from != 1 || @res_to != 1000 ? "<a href='/thread/#{@thread_no}/'>all</a>" : "all")
+    ret << (@res_to != 1000 ? "<a href='/thread/#{@thread_no}/from/#{@res_to}/'>aft</a>" : "aft")
     ret.length == 0 ? " * " : ret.join(' | ')
   end
 end
 
 class ViewThread
-  attr_reader :all, :from, :to, :conds, :id, :player
+  attr_reader :all, :from, :to, :conds, :id, :player, :real_threads
 
   def initialize(conds)
     @conds, @player, @id = conds, conds[:player], conds[:id]
@@ -138,7 +138,7 @@ class ViewThread
     elsif @player != nil
       p, n = (@from - 60 * 60 * 24), (@from + 60 * 60 * 24)
       ret << "<a href='#{p.to_day_link}player/#{@player}/'>#{p.strftime('%B %d')}</a>"
-      ret << "<a href='#{n.to_day_link}player/#{@player}/'>#{n.strftime('%B %d')}</a>" if n < TM.updatedat
+      ret << (n < TM.updatedat ? "<a href='#{n.to_day_link}player/#{@player}/'>#{n.strftime('%B %d')}</a>" : n.strftime('%B %d'))
     else
       ret << "<a href='#{(@from - MAX_TIMESPAN).from_link}'>- #{@from.strftime('%H:%M')}</a>"
       if Time.now.to_jst.comparetime >= @to.comparetime

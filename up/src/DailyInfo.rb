@@ -6,6 +6,7 @@ require './src/config.rb'
 
 class DailyInfoManager
   @@cache = {}
+  @@finish = false
   
   def DailyInfoManager.[](day)
     if @@cache[day] == nil
@@ -22,19 +23,60 @@ class DailyInfoManager
   def DailyInfoManager.all
     @@cache
   end
+
+  def DailyInfoManager.all_cached
+    @@finish
+  end
+
+  def DailyInfoManager.create_cache
+    return if @@finish
+    @@finish = true
+
+    TM.days.sort { |a, b| b[0] <=> a[0] }.each { |k, v|
+      if @@cache[k] == nil
+        DailyInfoManager.set_cache(k)
+        break
+      end
+    }
+
+    TM.days.sort { |a, b| b[1] <=> a[1] }.each { |k, v|
+      if @@cache[k] == nil
+        DailyInfoManager.set_cache(k)
+        break
+      end
+    }
+  end
+
+  private
+  def DailyInfoManager.set_cache(day)
+    @@cache[day] = { :time => Time.now.to_jst, :info => DailyInfo.new(day) }
+    @@finish = false
+  end
 end
 
 class DailyInfo 
-  attr_reader :count, :id
+  attr_reader :count, :id, :player, :threads_link
 
   ##########
   # initialize
   ##########
   def initialize(day)
     @day, @count, @id, @player, @link = day, 0, {}, {}, {}
+    @threads_link = ""
     vt = ViewThread.new( { :date => day, :daily_info => true } )
     collect_values(vt)
+    collect_thread(vt)
     p "Daily info for " + day.to_short_str
+  end
+
+  def collect_thread(vt)
+    l = '<dl>'
+    vt.real_threads.sort { |a, b| a.to <=> b.to }.each { |t|
+      l << '<dt>' + t.title + '</dt>'
+      l << "<dd><a href='#{t.real_url}'>#{t.real_url}</a></dt>"
+    }
+    l << '</dl>'
+    @threads_link = l
   end
 
   def collect_values(vt)
@@ -91,17 +133,23 @@ class DailyInfo
         l = "h" + s[0]
         if @link[l] == nil
           @link[l] = {
-            :player => [],
-            :res    => []
+            :res    => [],
+            :text   => link_text(r.text)
           } 
         end
 
-        @link[l][:player] = @link[l][:player] | link_player
-        @link[l][:res]    = @link[l][:res] | [r]
+        @link[l][:res] = @link[l][:res] | [ {
+          :ref_count => r.refer_from.length,
+          :link => "<a href='/thread/#{r.thread.no.to_s}/res/#{r.no.to_s}/'>#{r.time.strftime("%H")}</a>(#{ r.refer_from.length.to_s}) "
+        } ]
       else
         break
       end
     end
+  end
+
+  def link_text(text)
+    text.gsub("<br>", " ").gsub(/h{0,1}ttp:\S+/, " ")
   end
 
   ##########
@@ -142,22 +190,19 @@ class DailyInfo
   def link_link(no)
     ret = '<dl>'
     @link.sort { |a, b|
-      b[1][:res].inject(0) { |b, i| b + i.refer_from.length } -
-      a[1][:res].inject(0) { |b, i| b + i.refer_from.length }
+      b[1][:res].inject(0) { |b, i| b + i[:ref_count] } -
+      a[1][:res].inject(0) { |b, i| b + i[:ref_count] }
     }.each_with_index { |kv, i|
-      break if i >= no
+      count = kv[1][:res].inject(0) { |b, i| b + i[:ref_count] }
+      break if i >= no || count == 0
       ret << '<dt>'
-      count = kv[1][:res].inject(0) { |b, i| b + i.refer_from.length }
       ret << '[' + count.to_s + '] '
 
-      kv[1][:player].each { |p| ret << p.to_s + ", " }
-      ret << "- " if kv[1][:player].length == 0
       kv[1][:res].each { |r|
-        ret <<
-          "<a href='/thread/" + r.thread.no.to_s + "/res/" + r.no.to_s + "/'>" +
-          r.time.strftime("%H") + "</a>(" + r.refer_from.length.to_s + ") "
+        ret << r[:link]
       }
       ret << '</dt>'
+      ret << "<dd>#{kv[1][:text]}</dd>"
       ret << '<dd><a href="' + kv[0] + '">' + kv[0] + '</a></dd>'
     }
     ret << '</dl>'

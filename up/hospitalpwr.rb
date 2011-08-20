@@ -24,7 +24,7 @@ Maintainer.new().start
 
 # current
 get '/current/' do
-  redirect (Time.now.to_jst - MAX_TIMESPAN).to_link
+  redirect (Time.now.to_jst - MAX_TIMESPAN).from_link
 end
 
 # get day
@@ -92,6 +92,10 @@ end
 
 get '/rss.xml' do
   haml :rss
+end
+
+get '/player/' do
+  haml :player_index
 end
 
 # debug
