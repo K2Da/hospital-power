@@ -13,6 +13,5 @@
             %tr
               %td
                 %a{ :href => d.to_day_link }=d.strftime('%b %d, %y')
-              %td=h[:time].to_short_str
-              %td=h[:info].count.to_s
+              %td=h.to_s
     =haml :'common/footer'

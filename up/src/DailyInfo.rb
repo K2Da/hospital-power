@@ -3,21 +3,23 @@ require 'strscan'
 require './src/TchThread.rb'
 require './src/ViewThread.rb'
 require './src/config.rb'
+require './src/DB.rb'
 
 class DailyInfoManager
   @@cache = {}
   @@finish = false
   
   def DailyInfoManager.[](day)
-    if @@cache[day] == nil
-      @@cache[day] = { :time => Time.now.to_jst, :info => DailyInfo.new(day) }
+    c = DIC.get(day)
+    if c == nil
+      c = DailyInfoManager.set_cache(day)
     end
 
-    return @@cache[day][:info]
+    return c[:info]
   end
 
   def DailyInfoManager.renew(day)
-    @@cache[day] = { :time => Time.now.to_jst, :info => DailyInfo.new(day) }
+    DailyInfoManager.set_cache(day)
   end
 
   def DailyInfoManager.all
@@ -42,6 +44,7 @@ class DailyInfoManager
     TM.days.sort { |a, b| b[1] <=> a[1] }.each { |k, v|
       if @@cache[k] == nil
         DailyInfoManager.set_cache(k)
+        @@finish = false
         break
       end
     }
@@ -49,8 +52,11 @@ class DailyInfoManager
 
   private
   def DailyInfoManager.set_cache(day)
-    @@cache[day] = { :time => Time.now.to_jst, :info => DailyInfo.new(day) }
-    @@finish = false
+    di = { :time => Time.now.to_jst, :info => DailyInfo.new(day) }
+    DIC.delete(day)
+    DIC.insert(day, di)
+    @@cache[day] = di[:info].count
+    di
   end
 end
 
@@ -202,7 +208,7 @@ class DailyInfo
         ret << r[:link]
       }
       ret << '</dt>'
-      ret << "<dd>#{kv[1][:text]}</dd>"
+      ret << "<dd>#{kv[1][:text].force_encoding("UTF-8")}</dd>"
       ret << '<dd><a href="' + kv[0] + '">' + kv[0] + '</a></dd>'
     }
     ret << '</dl>'

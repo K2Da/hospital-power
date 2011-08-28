@@ -85,7 +85,9 @@ class ViewThread
 
     @real_threads.each { |rt| rt.res.each { |r| check_res(r, already, notyet) } }
     notyet.each { |ny| already << ny if res_check(ny, already, []) }
-    @all = already.sort! { |r1, r2| r1.time - r2.time }.map! { |r| ViewRes.new(self, r) }
+    @all = already.sort! { |r1, r2|
+      r1.time == r2.time ? r1.no <=> r2.no : r1.time <=> r2.time
+    }.map! { |r| ViewRes.new(self, r) }
   end
 
   def check_res(r, already, notyet)

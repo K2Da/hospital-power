@@ -112,12 +112,12 @@ get '/dailyinfo/' do
 end
 
 =begin
-get '/env' do
-  ENV['VCAP_SERVICES']
+get '/createdb' do
+  DB.create_page_cache_table
 end
 
-get '/createdb' do
-  DB.create_thread_table
+get '/env' do
+  ENV['VCAP_SERVICES']
 end
 
 get '/current_thread' do

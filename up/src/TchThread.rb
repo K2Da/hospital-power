@@ -88,7 +88,7 @@ end
 class TchThread
   LIFETIME   = 10 * 60
   THREAD_URL = "http://yuzuru.2ch.net/test/read.cgi/gamefight/"
-  attr_accessor :no, :title, :lastaccess, :res_count
+  attr_accessor :no, :title, :lastaccess, :res_count, :from, :to
 
   def initialize(no)
     @no = no
@@ -131,25 +131,7 @@ class TchThread
       end
     }
     set_refer
-    @from, @to, @res_count = from, to, lines.length
-  end
-
-  def from
-    return @from if @res_arr == nil
-    res[0].time
-  end
-  
-  def from=(f)
-    @from = f
-  end
-
-  def to
-    return @to if @res_arr == nil
-    res.last.time
-  end
-
-  def to=(t)
-    @to = t
+    @from, @to, @res_count = res[0].time, res.last.time, lines.length
   end
 
   def res

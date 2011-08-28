@@ -1,5 +1,5 @@
 # coding: UTF-8
-REG_TITLE = /.*ウメハラ総合スレ\d{4}.*/
+REG_TITLE = /.*ウメハラ総合スレ.*\d{4}.*/
 MAX_TIMESPAN = 1 * 60 * 60
 
 PLAYERS = {
@@ -58,7 +58,8 @@ PLAYERS = {
   :cis              => /cis/i,
   :Inaba            => /Inaba|稲葉/i,
   :Umezono          => /梅園/i,
-  :KOK              => /KOK/,
-  :Furious          => /furious/,
+  :KOK              => /KOK/i,
+  :Furious          => /furious/i,
+  :ReiketsuHidou    => /reiketsuhidou|冷血/i,
   :Xian             => /Xian|シャングリラ神/i
 }

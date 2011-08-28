@@ -16,7 +16,9 @@ DB = Sequel.connect(
 
 THR = DB[:thread]
 
-# create table
+##########
+# THR
+##########
 def DB.create_thread_table
   DB.create_table? :thread do
     primary_key :no
@@ -29,16 +31,16 @@ def DB.create_thread_table
   end
 end
 
-def params(t, dat)
+def THR.params(t, dat)
   { :no => t.no, :title => t.title, :from => t.from, :to => t.to, :res_count => t.res.count, :dat => dat }
 end
 
 def THR.insert(t, dat)
-  DB[:thread].insert(params(t, dat))
+  DB[:thread].insert(THR.params(t, dat))
 end
 
 def THR.update(t, dat)
-  DB[:thread].update(params(t, dat))
+  DB[:thread].update(THR.params(t, dat))
 end
 
 def THR.delete(t)
@@ -55,4 +57,36 @@ end
 
 def THR.info
   DB[:thread].select(:no, :title, :from, :to, :res_count)
+end
+
+##########
+# DIC
+##########
+def DB.create_page_cache_table
+  DB.create_table? :daily_info_cache do
+    primary_key :cache_date
+    String   :cache_date, :size => 8
+    File     :cache, :size => :medium
+  end
+end
+DB.create_page_cache_table
+
+DIC = DB[:daily_info_cache]
+DB[:daily_info_cache].delete
+
+def DIC.delete(date)
+  DB[:daily_info_cache].filter('cache_date = ?', date.to_day).delete
+end 
+
+def DIC.get(date)
+  r = DB[:daily_info_cache].filter('cache_date = ?', date.to_day)[:cache_date => date.to_day]
+  return nil if r == nil
+  YAML.load(r[:cache])
+end 
+
+def DIC.insert(date, di)
+  DB[:daily_info_cache].insert( {
+    :cache_date => date.to_day,
+    :cache => "# encoding: UTF-8\n" + YAML.dump(di)
+  } )
 end
